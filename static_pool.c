@@ -7,13 +7,13 @@
 
 #include "static_pool.h"
 
-#ifndef STATIC_POOL_LOCK()
-#define STATIC_POOL_LOCK()     /* Critical section enter */
-#endif
-
-#ifndef STATIC_POOL_UNLOCK()
-#define STATIC_POOL_UNLOCK()   /* Critical section exit */
-#endif
+#ifdef STATIC_POOL_USER_LOCKS
+extern void static_pool_lock(void);
+extern void static_pool_unlock(void);
+#else
+#define static_pool_lock()     /* Critical section enter */
+#define static_pool_unlock()   /* Critical section exit */
+#endif /* STATIC_POOL_USER_LOCKS */
 
 /**
  * @brief       Allocates one block from pool.
@@ -23,7 +23,7 @@
  */
 void *static_pool_alloc(static_pool_cb *pool)
 {
-    STATIC_POOL_LOCK();
+    static_pool_lock();
 
     uint32_t i;
     void *pRet = NULL;
@@ -32,13 +32,13 @@ void *static_pool_alloc(static_pool_cb *pool)
     {
         if (pool->pState[i] == 0)
         {
-            pRet = &pool->pPool[i];
+            pRet = pool->pPool + i * pool->blk_size;
             pool->pState[i] = 1;
             break;
         }
     }
 
-    STATIC_POOL_UNLOCK();
+    static_pool_unlock();
 
     return pRet;
 }
@@ -53,18 +53,18 @@ void static_pool_free(static_pool_cb *pool, void *p)
 {
     uint32_t i;
 
-    STATIC_POOL_LOCK();
+    static_pool_lock();
 
     for (i = 0; i < pool->blks_num; i++)
     {
-        if ((&pool->pPool[i] == p) && (pool->pState[i] != 0))
+        if (((pool->pPool + i * pool->blk_size) == p) && (pool->pState[i] != 0))
         {
             pool->pState[i] = 0;
             break;
         }
     }
 
-    STATIC_POOL_UNLOCK();
+    static_pool_unlock();
 }
 
 /**
@@ -78,7 +78,7 @@ uint32_t static_pool_get_free_blks(static_pool_cb *pool)
     uint32_t i;
     uint32_t num = 0;
 
-    STATIC_POOL_LOCK();
+    static_pool_lock();
 
     for (i = 0; i < pool->blks_num; i++)
     {
@@ -88,7 +88,7 @@ uint32_t static_pool_get_free_blks(static_pool_cb *pool)
         }
     }
 
-    STATIC_POOL_UNLOCK();
+    static_pool_unlock();
 
     return num;
 }

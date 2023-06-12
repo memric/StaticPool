@@ -13,7 +13,7 @@
 
 typedef struct {
     uint32_t blks_num;
-    uint32_t byte_size;
+    uint32_t blk_size;
     uint8_t *pState;
     void *pPool;
 } static_pool_cb;
@@ -22,10 +22,10 @@ typedef struct {
 static type pool_##name[size]; \
 static uint8_t pool_state_##name[size]; \
 static static_pool_cb pool_cb_##name = \
-{size, size * sizeof(type), pool_state_##name, pool_##name}
+{size, sizeof(type), pool_state_##name, pool_##name}
 
 #define static_pool_init(name) \
-memset(pool_cb_##name.pPool, 0, pool_cb_##name.byte_size); \
+memset(pool_cb_##name.pPool, 0, pool_cb_##name.blks_num * pool_cb_##name.blk_size); \
 memset(pool_cb_##name.pState, 0, pool_cb_##name.blks_num * sizeof(uint8_t))
 
 #define pSTATIC_POOL(name)                  (&pool_cb_##name)
