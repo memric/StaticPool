@@ -30,7 +30,7 @@ memset(pool_cb_##name.pState, 0, pool_cb_##name.blks_num * sizeof(uint8_t))
 
 #define pSTATIC_POOL(name)                  (&pool_cb_##name)
 
-#define static_pool_get_byte_size(pool)     pool->byte_size
+#define static_pool_get_byte_size(pool)     (pool->blk_size * pool->blks_num)
 #define static_pool_get_blks_num(pool)      pool->blks_num
 
 void *static_pool_alloc(static_pool_cb *pool);
