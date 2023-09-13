@@ -15,14 +15,14 @@ typedef struct {
     uint16_t v2;
 } test_type_t;
 
-STATIC_POOL_DEFINE(test, TEST_POOL_SIZE, test_type_t);
+STATIC_POOL_DEFINE(test, TEST_POOL_SIZE, test_type_t, NULL, NULL);
 
 int main(void)
 {
     printf("--- Static Pool Test ---\r\n");
 
     printf("Init test: ");
-    static_pool_init(test);
+    static_pool_init(pSTATIC_POOL(test));
 
     if ((static_pool_get_byte_size(pSTATIC_POOL(test)) == TEST_POOL_SIZE * sizeof(test_type_t))
             && (static_pool_get_blks_num(pSTATIC_POOL(test)) == TEST_POOL_SIZE))

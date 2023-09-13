@@ -6,14 +6,24 @@
  */
 
 #include "static_pool.h"
+#include <string.h>
 
-#ifdef STATIC_POOL_USER_LOCKS
-extern void static_pool_lock(void);
-extern void static_pool_unlock(void);
-#else
-#define static_pool_lock()     /* Critical section enter */
-#define static_pool_unlock()   /* Critical section exit */
-#endif /* STATIC_POOL_USER_LOCKS */
+/**
+ * @brief       Static pool initialization.
+ *
+ * @param pool  Pointer to pool control block. pSTATIC_POOL macro is useful.
+ */
+void static_pool_init(static_pool_cb *pool)
+{
+    STATIC_POOL_ASSERT(pool != NULL);
+    STATIC_POOL_ASSERT(pool->pPool != NULL);
+    STATIC_POOL_ASSERT(pool->pState != NULL);
+    STATIC_POOL_ASSERT(pool->blks_num > 0);
+    STATIC_POOL_ASSERT(pool->blk_size > 0);
+
+    memset(pool->pPool, 0, pool->blks_num * pool->blk_size);
+    memset(pool->pState, 0, pool->blks_num * sizeof(uint8_t));
+}
 
 /**
  * @brief       Allocates one block from pool.
@@ -23,9 +33,16 @@ extern void static_pool_unlock(void);
  */
 void *static_pool_alloc(static_pool_cb *pool)
 {
-    static_pool_lock();
+    STATIC_POOL_ASSERT(pool != NULL);
 
-    uint32_t i;
+    void *lock_arg = NULL;
+
+    if (pool->Lock != NULL)
+    {
+        pool->Lock(lock_arg);
+    }
+
+    spool_size_t i;
     void *pRet = NULL;
 
     for (i = 0; i < pool->blks_num; i++)
@@ -38,7 +55,10 @@ void *static_pool_alloc(static_pool_cb *pool)
         }
     }
 
-    static_pool_unlock();
+    if (pool->Unlock != NULL)
+    {
+        pool->Unlock(lock_arg);
+    }
 
     return pRet;
 }
@@ -51,9 +71,16 @@ void *static_pool_alloc(static_pool_cb *pool)
  */
 void static_pool_free(static_pool_cb *pool, void *p)
 {
-    uint32_t i;
+    STATIC_POOL_ASSERT(pool != NULL);
+    STATIC_POOL_ASSERT(p != NULL);
 
-    static_pool_lock();
+    spool_size_t i;
+    void *lock_arg = NULL;
+
+    if (pool->Lock != NULL)
+    {
+        pool->Lock(lock_arg);
+    }
 
     for (i = 0; i < pool->blks_num; i++)
     {
@@ -64,7 +91,10 @@ void static_pool_free(static_pool_cb *pool, void *p)
         }
     }
 
-    static_pool_unlock();
+    if (pool->Unlock != NULL)
+    {
+        pool->Unlock(lock_arg);
+    }
 }
 
 /**
@@ -73,12 +103,18 @@ void static_pool_free(static_pool_cb *pool, void *p)
  * @param pool  Pointer to pool control block. pSTATIC_POOL macro is useful.
  * @return      Number of free blocks
  */
-uint32_t static_pool_get_free_blks(static_pool_cb *pool)
+spool_size_t static_pool_get_free_blks(static_pool_cb *pool)
 {
-    uint32_t i;
-    uint32_t num = 0;
+    STATIC_POOL_ASSERT(pool != NULL);
 
-    static_pool_lock();
+    spool_size_t i;
+    spool_size_t num = 0;
+    void *lock_arg = NULL;
+
+    if (pool->Lock != NULL)
+    {
+        pool->Lock(lock_arg);
+    }
 
     for (i = 0; i < pool->blks_num; i++)
     {
@@ -88,7 +124,10 @@ uint32_t static_pool_get_free_blks(static_pool_cb *pool)
         }
     }
 
-    static_pool_unlock();
+    if (pool->Unlock != NULL)
+    {
+        pool->Unlock(lock_arg);
+    }
 
     return num;
 }
