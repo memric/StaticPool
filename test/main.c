@@ -5,12 +5,13 @@
  *      Author: chudnikov
  */
 
-#include <stdio.h>
 #include "../static_pool.h"
+#include <stdio.h>
 
-#define TEST_POOL_SIZE      10
+#define TEST_POOL_SIZE 10
 
-typedef struct {
+typedef struct
+{
     uint16_t v1;
     uint16_t v2;
 } test_type_t;
@@ -24,8 +25,8 @@ int main(void)
     printf("Init test: ");
     static_pool_init(pSTATIC_POOL(test));
 
-    if ((static_pool_get_byte_size(pSTATIC_POOL(test)) == TEST_POOL_SIZE * sizeof(test_type_t))
-            && (static_pool_get_blks_num(pSTATIC_POOL(test)) == TEST_POOL_SIZE))
+    if ((static_pool_get_byte_size(pSTATIC_POOL(test)) == TEST_POOL_SIZE * sizeof(test_type_t)) &&
+        (static_pool_get_blks_num(pSTATIC_POOL(test)) == TEST_POOL_SIZE))
     {
         printf("PASS\r\n");
     }
@@ -58,7 +59,8 @@ int main(void)
     uint32_t allocated_blks = 0;
     test_type_t *ta[TEST_POOL_SIZE];
 
-    do {
+    do
+    {
         if ((allocated_blks + static_pool_get_free_blks(pSTATIC_POOL(test)) != TEST_POOL_SIZE))
         {
             printf("FAIL on: Allocated blocks %d\r\n", allocated_blks);
@@ -67,8 +69,7 @@ int main(void)
 
         ta[allocated_blks] = static_pool_alloc(pSTATIC_POOL(test));
         allocated_blks++;
-    }
-    while ((t != NULL) && (allocated_blks < TEST_POOL_SIZE));
+    } while ((t != NULL) && (allocated_blks < TEST_POOL_SIZE));
 
     /* Check for NULL return */
     if (static_pool_alloc(pSTATIC_POOL(test)) == NULL)

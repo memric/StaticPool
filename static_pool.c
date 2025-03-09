@@ -49,7 +49,7 @@ void *static_pool_alloc(static_pool_cb *pool)
     {
         if (pool->pState[i] == 0)
         {
-            pRet = pool->pPool + i * pool->blk_size;
+            pRet            = pool->pPool + i * pool->blk_size;
             pool->pState[i] = 1;
             break;
         }
@@ -109,7 +109,7 @@ spool_size_t static_pool_get_free_blks(static_pool_cb *pool)
 
     spool_size_t i;
     spool_size_t num = 0;
-    void *lock_arg = NULL;
+    void *lock_arg   = NULL;
 
     if (pool->Lock != NULL)
     {
