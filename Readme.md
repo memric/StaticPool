@@ -1,5 +1,5 @@
 # Static Pool
-Very simple static memory allocator for embedded systems. Can be used for dinamic fixed size blocks allocation.
+Very simple static memory allocator for embedded systems. Can be used for the dinamic fixed size blocks allocation.
 
 ## Usage
 Define the static memory pool
