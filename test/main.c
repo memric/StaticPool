@@ -28,11 +28,11 @@ int main(void)
     if ((static_pool_get_byte_size(pSTATIC_POOL(test)) == TEST_POOL_SIZE * sizeof(test_type_t)) &&
         (static_pool_get_blks_num(pSTATIC_POOL(test)) == TEST_POOL_SIZE))
     {
-        printf("PASS\r\n");
+        printf("PASSED\r\n");
     }
     else
     {
-        printf("FAIL\r\n");
+        printf("FAILED\r\n");
         return -1;
     }
 
@@ -41,17 +41,17 @@ int main(void)
 
     if (t != NULL)
     {
-        printf("PASS\r\n");
+        printf("PASSED\r\n");
     }
     else
     {
-        printf("FAIL\r\n");
+        printf("FAILED\r\n");
         return -1;
     }
 
     printf("Free test: ");
     static_pool_free(pSTATIC_POOL(test), t);
-    printf("PASS\r\n");
+    printf("PASSED\r\n");
 
     /* Alloc all blocks */
     printf("Fill test: ");
@@ -63,7 +63,7 @@ int main(void)
     {
         if ((allocated_blks + static_pool_get_free_blks(pSTATIC_POOL(test)) != TEST_POOL_SIZE))
         {
-            printf("FAIL on: Allocated blocks %d\r\n", allocated_blks);
+            printf("FAILED on: Allocated blocks %d\r\n", allocated_blks);
             return -1;
         }
 
@@ -74,11 +74,11 @@ int main(void)
     /* Check for NULL return */
     if (static_pool_alloc(pSTATIC_POOL(test)) == NULL)
     {
-        printf("PASS\r\n");
+        printf("PASSED\r\n");
     }
     else
     {
-        printf("FAIL\r\n");
+        printf("FAILED\r\n");
         return -1;
     }
 
@@ -93,15 +93,13 @@ int main(void)
 
     if (static_pool_get_blks_num(pSTATIC_POOL(test)) == TEST_POOL_SIZE)
     {
-        printf("PASS\r\n");
+        printf("PASSED\r\n");
     }
     else
     {
-        printf("FAIL\r\n");
+        printf("FAILED\r\n");
         return -1;
     }
-
-    printf("All tests PASSED\r\n");
 
     return 0;
 }
